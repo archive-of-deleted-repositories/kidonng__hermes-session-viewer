@@ -161,7 +161,7 @@ export function SessionHeader({
   return (
     <>
       <section className="sticky top-4 lg:top-7 z-10 rounded-2xl border border-base-300/70 bg-base-100/90 backdrop-blur-xl">
-        <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 lg:px-6">
+        <div className="flex flex-col px-4 py-2 lg:py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 lg:px-6">
           <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <div className="min-w-0">
               <h2 className="truncate text-base font-bold tracking-tight text-base-content sm:text-lg">{summary.displayName}</h2>
