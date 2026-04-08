@@ -271,6 +271,7 @@
     font-size: 0.95rem;
     line-height: 1.75;
     color: color-mix(in oklch, var(--color-base-content) 88%, black 12%);
+    word-break: break-all;
   }
 
   .md > :first-child {
@@ -304,7 +305,6 @@
 
   .md p {
     white-space: pre-wrap;
-    word-break: break-all;
   }
 
   .md ul,
