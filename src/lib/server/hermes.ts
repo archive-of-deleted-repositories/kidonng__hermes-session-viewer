@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import Database from 'better-sqlite3'
 import type {
   JsonValue,
   SessionMetaInfo,
@@ -17,6 +18,7 @@ import { renderMarkdown } from '~/lib/server/markdown'
 
 const SESSIONS_DIR = path.join(os.homedir(), '.hermes', 'sessions')
 const SESSION_INDEX_PATH = path.join(SESSIONS_DIR, 'sessions.json')
+const STATE_DB_PATH = path.join(os.homedir(), '.hermes', 'state.db')
 
 type ViewerRequest = {
   sessionId?: string
@@ -85,7 +87,8 @@ const DEFAULT_PREVIEW_KEYS = [
 ]
 
 export async function getViewerData({ sessionId }: ViewerRequest): Promise<ViewerData> {
-  const sessions = await loadSessions()
+  const dbSessions = loadSessionsFromDb()
+  const sessions = await loadSessions(dbSessions)
   const activeSessionId = resolveActiveSessionId(sessionId, sessions)
 
   if (!activeSessionId) {
@@ -112,7 +115,9 @@ export async function getViewerData({ sessionId }: ViewerRequest): Promise<Viewe
   }
 }
 
-async function loadSessions(): Promise<SessionSummary[]> {
+async function loadSessions(
+  dbSessions: Map<string, { title: string | null; messageCount: number }>,
+): Promise<SessionSummary[]> {
   const index = await readJsonFile<Record<string, unknown>>(SESSION_INDEX_PATH)
 
   if (!index) {
@@ -120,13 +125,39 @@ async function loadSessions(): Promise<SessionSummary[]> {
   }
 
   return Object.values(index)
-    .map((value) => toSessionSummary(value))
+    .map((value) => toSessionSummary(value, dbSessions))
     .filter((value): value is SessionSummary => value !== null)
     .sort((left, right) => {
       const leftTime = Date.parse(left.updatedAt ?? left.createdAt ?? '')
       const rightTime = Date.parse(right.updatedAt ?? right.createdAt ?? '')
       return rightTime - leftTime
     })
+}
+
+function loadSessionsFromDb(): Map<string, { title: string | null; messageCount: number }> {
+  const sessions = new Map<string, { title: string | null; messageCount: number }>()
+
+  try {
+    const db = new Database(STATE_DB_PATH, { readonly: true })
+    const rows = db.prepare('SELECT id, title, message_count FROM sessions').all() as {
+      id: string
+      title: string | null
+      message_count: number
+    }[]
+
+    for (const row of rows) {
+      sessions.set(row.id, {
+        title: row.title,
+        messageCount: row.message_count,
+      })
+    }
+
+    db.close()
+  } catch {
+    // Database not available or corrupted
+  }
+
+  return sessions
 }
 
 function resolveActiveSessionId(
@@ -167,12 +198,13 @@ async function loadTranscript(summary: SessionSummary): Promise<SessionTranscrip
   const metaEntry = parsedLines.find((line) => toStringValue(line.entry.role) === 'session_meta')?.entry
   const meta = await buildSessionMeta(summary, metaEntry, metaFile, jsonlPath, summaryPath)
   const messages = await buildMessages(parsedLines)
+  const messageCount = messages.length
 
   return {
     summary,
     meta,
     messages,
-    messageCount: messages.length,
+    messageCount,
     toolCallCount: messages.reduce((total, message) => total + message.toolCalls.length, 0),
   }
 }
@@ -346,7 +378,10 @@ async function buildSessionMeta(
   }
 }
 
-function toSessionSummary(value: unknown): SessionSummary | null {
+function toSessionSummary(
+  value: unknown,
+  dbSessions: Map<string, { title: string | null; messageCount: number }>,
+): SessionSummary | null {
   if (!isRecord(value)) {
     return null
   }
@@ -358,12 +393,15 @@ function toSessionSummary(value: unknown): SessionSummary | null {
     return null
   }
 
+  const dbSession = dbSessions.get(sessionId)
+  const title = dbSession?.title ?? toStringValue(value.display_name)
+
   return {
     sessionKey,
     sessionId,
     createdAt: toStringValue(value.created_at),
     updatedAt: toStringValue(value.updated_at),
-    displayName: toStringValue(value.display_name) ?? sessionKey,
+    displayName: title ?? sessionKey,
     platform: toStringValue(value.platform),
     chatType: toStringValue(value.chat_type),
     inputTokens: toNumberValue(value.input_tokens),

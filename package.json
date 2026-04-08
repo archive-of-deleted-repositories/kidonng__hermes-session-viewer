@@ -16,6 +16,7 @@
     "@tanstack/react-router": "^1.168.10",
     "@tanstack/react-router-devtools": "^1.166.11",
     "@tanstack/react-start": "^1.167.16",
+    "better-sqlite3": "^12.8.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "unified": "latest",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@shikijs/rehype": "latest",
     "@tailwindcss/vite": "^4.2.2",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.5.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
