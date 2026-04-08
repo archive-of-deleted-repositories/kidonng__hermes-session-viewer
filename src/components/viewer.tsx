@@ -72,9 +72,6 @@ export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChan
       <div className="border-b border-base-300/70 px-5 pb-5 pt-6">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-base-content/45">Hermes</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-base-content">Session Viewer</h1>
-        <p className="mt-2 max-w-xs text-sm leading-6 text-base-content/65">
-          Read-only transcript explorer for local Hermes conversations, tool usage, and reasoning trails.
-        </p>
         <div className="mt-4 flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">Theme</span>
           <select
@@ -87,9 +84,13 @@ export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChan
             <option value="hermes-dark">Dark</option>
           </select>
         </div>
-        <label className="mt-4 block">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">
-            Filter sessions
+      </div>
+
+      <div className="px-3 py-4">
+        <label className="mb-4 block">
+          <span className="mb-3 flex items-center justify-between px-2 text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">
+            <span>Sessions</span>
+            <span>{visibleSessions.length}</span>
           </span>
           <input
             value={filter}
@@ -98,13 +99,6 @@ export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChan
             className="input input-bordered w-full rounded-2xl border-base-300/80 bg-base-100/90"
           />
         </label>
-      </div>
-
-      <div className="px-3 py-4">
-        <div className="mb-3 flex items-center justify-between px-2 text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">
-          <span>Sessions</span>
-          <span>{visibleSessions.length}</span>
-        </div>
 
         <div className="space-y-2">
           {visibleSessions.map((session) => {
