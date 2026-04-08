@@ -265,6 +265,11 @@
     background: color-mix(in oklch, var(--color-error) 10%, var(--color-base-100));
   }
 
+  details.tool-panel[open] .tool-preview,
+  details.tool-panel[open] .tool-status {
+    display: none !important;
+  }
+
   .md {
     display: grid;
     gap: 1rem;

@@ -478,10 +478,6 @@ function buildResultSummary(parsed: unknown, contentText: string): string | unde
     }
   }
 
-  if (typeof parsed.success === 'boolean') {
-    return parsed.success ? 'Marked successful' : 'Marked failed'
-  }
-
   return contentText ? truncate(singleLine(contentText), 140) : undefined
 }
 

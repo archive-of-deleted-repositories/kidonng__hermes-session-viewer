@@ -337,51 +337,96 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
             <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
               {toolCall.name}
             </span>
-            {resultStatus === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
+            <p className="tool-preview truncate font-mono text-xs leading-6 text-base-content/60">
+              {toolCall.previewValue}
+            </p>
           </div>
-          <p className="mt-3 truncate font-mono text-xs leading-6 text-base-content/60">
-            <span className="font-semibold uppercase tracking-[0.16em] text-base-content/40">
-              {toolCall.previewLabel}
-            </span>{' '}
-            {toolCall.previewValue}
-          </p>
         </div>
-
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/35">
-          {toolCall.results.length ? `${toolCall.results.length} result${toolCall.results.length > 1 ? 's' : ''}` : 'pending'}
-        </div>
+        {resultStatus === 'error' && <span className="tool-status badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
       </summary>
 
-      <div className="mt-5 space-y-4">
-        {toolCall.previewKind === 'link' ? (
-          <a
-            href={toolCall.previewFullValue}
-            target="_blank"
-            rel="noreferrer"
-            className="link link-primary break-all font-medium"
-          >
-            {toolCall.previewFullValue}
-          </a>
-        ) : null}
-
+      <div className="mt-5 space-y-6">
         {toolCall.renderedCommandHtml ? (
-          <div className="rounded-3xl border border-base-300/70 bg-base-100/75 p-4">
-            <MarkdownBlock html={toolCall.renderedCommandHtml} />
-          </div>
+          <MarkdownBlock html={toolCall.renderedCommandHtml} />
         ) : null}
 
-        <details className="rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
-          <summary className="cursor-pointer text-sm font-semibold text-base-content/75">Arguments</summary>
-          <pre className="mt-4 overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
-            {toolCall.argumentsText}
-          </pre>
-        </details>
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-base-content/50 mb-3">Arguments</p>
+          {toolCall.argumentsObject ? (
+            <div className="overflow-x-auto rounded-2xl bg-base-200">
+              <JsonTable
+                data={toolCall.argumentsObject}
+                columns={toolCall.previewKind === 'link' ? { [toolCall.previewLabel]: 'url' } : undefined}
+              />
+            </div>
+          ) : (
+            <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+              {toolCall.argumentsText}
+            </pre>
+          )}
+        </div>
 
-        {toolCall.results.map((result, index) => (
-          <ToolResultCard key={`${toolCall.id}-result-${index}`} result={result} />
-        ))}
+        {toolCall.results.length > 0 && (
+          <div className="border-t-2 border-base-300/80 pt-6">
+            {toolCall.results.map((result, index) => (
+              <ToolResultCard key={`${toolCall.id}-result-${index}`} result={result} />
+            ))}
+          </div>
+        )}
       </div>
     </details>
+  )
+}
+
+type JsonColumnType = 'url' | 'markdown' | 'code'
+
+type JsonColumns = Record<string, JsonColumnType>
+
+function JsonTable({ data, columns }: { data: Record<string, unknown> | unknown[]; columns?: JsonColumns }) {
+  const isArray = Array.isArray(data)
+  const entries = isArray ? data.map((v, i) => [String(i), v] as [string, unknown]) : Object.entries(data)
+
+  function renderValue(value: unknown, key: string): React.ReactNode {
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value)
+    }
+    const str = String(value)
+    const colType = columns?.[key]
+
+    if (colType === 'url') {
+      return (
+        <a href={str} target="_blank" rel="noreferrer" className="link link-primary break-all">
+          {str}
+        </a>
+      )
+    }
+
+    if (colType === 'markdown') {
+      return <MarkdownBlock html={str} />
+    }
+
+    if (colType === 'code') {
+      return (
+        <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+          <code>{str}</code>
+        </pre>
+      )
+    }
+
+    return str
+  }
+
+  return (
+    <table className="w-full font-mono text-xs">
+      <tbody>
+        {entries.map(([key, value]) => (
+          <tr key={key} className="border-b border-base-300/50 last:border-0">
+            <td className="px-4 py-2 font-semibold text-base-content/50">{key}</td>
+            <td className="px-4 py-2 text-base-content/80">{renderValue(value, key)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }
 
@@ -389,29 +434,31 @@ function ToolResultCard({ result }: { result: ToolResultView }) {
   const rawPreview = result.parsed ? JSON.stringify(result.parsed, null, 2) : result.contentText
 
   return (
-    <section className={`rounded-3xl border p-4 ${result.status === 'error' ? 'border-error/35 bg-error/12' : 'border-base-300/70 bg-base-100/70'}`}>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            {result.status === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
-            {result.summary ? <p className="text-sm text-base-content/70">{result.summary}</p> : null}
-          </div>
-        </div>
+    <div>
+      <div className="flex flex-wrap items-center gap-2">
+        {result.status === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
+        {result.summary ? <p className="text-sm text-base-content/70">{result.summary}</p> : null}
       </div>
 
       {result.renderedAnalysisHtml ? (
-        <div className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/75 p-4">
+        <div className="rounded-3xl border border-base-300/70 bg-base-100/75 p-4 mt-4">
           <MarkdownBlock html={result.renderedAnalysisHtml} />
         </div>
       ) : null}
 
-      <details className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-base-content/75">Raw result</summary>
-        <pre className="mt-4 overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
-          {rawPreview}
-        </pre>
-      </details>
-    </section>
+      <div className="mt-4">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-base-content/50 mb-3">Result</p>
+        {result.parsed && typeof result.parsed === 'object' ? (
+          <div className="overflow-x-auto rounded-2xl bg-base-200">
+            <JsonTable data={result.parsed} />
+          </div>
+        ) : (
+          <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+            {rawPreview}
+          </pre>
+        )}
+      </div>
+    </div>
   )
 }
 
