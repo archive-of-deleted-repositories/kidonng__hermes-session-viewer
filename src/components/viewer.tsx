@@ -338,7 +338,7 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
             </p>
           </div>
         </div>
-        {resultStatus === 'error' && <span className="tool-status badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
+        {resultStatus === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
       </summary>
 
       <div className="mt-5 space-y-6">
@@ -435,8 +435,6 @@ function ToolResultCard({ result, toolName }: { result: ToolResultView; toolName
 
   return (
     <div>
-      {result.status === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
-
       {result.parsed && typeof result.parsed === 'object' ? (
           <JsonTable data={result.parsed} columns={columns} rendered={result.rendered} />
       ) : (
