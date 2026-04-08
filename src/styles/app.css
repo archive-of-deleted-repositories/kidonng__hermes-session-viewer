@@ -330,7 +330,7 @@
 
   .md code {
     border-radius: 0.45rem;
-    background: color-mix(in oklch, var(--color-base-content) 6%, white 94%);
+    background: color-mix(in oklch, var(--color-base-content) 8%, var(--color-base-100));
     padding: 0.15rem 0.4rem;
     font-size: 0.87em;
   }
@@ -339,7 +339,7 @@
     overflow-x: auto;
     border-radius: 1.15rem;
     border: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
-    background: color-mix(in oklch, white 70%, var(--color-base-100));
+    background: color-mix(in oklch, var(--color-base-content) 4%, var(--color-base-100));
     padding: 1rem;
   }
 
@@ -368,6 +368,20 @@
 
   .md--reasoning {
     color: color-mix(in oklch, var(--color-base-content) 76%, white 10%);
+  }
+}
+
+[data-theme="hermes-dark"] .shiki,
+[data-theme="hermes-dark"] .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .shiki,
+  :root:not([data-theme]) .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
   }
 }
 

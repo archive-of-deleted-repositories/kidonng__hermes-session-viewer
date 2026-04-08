@@ -10,7 +10,10 @@ const markdownProcessor = unified()
   .use(remarkGfm)
   .use(remarkRehype)
   .use(rehypeShiki, {
-    theme: 'github-light',
+    themes: {
+      light: 'github-light',
+      dark: 'github-dark',
+    },
   })
   .use(rehypeStringify)
 

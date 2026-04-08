@@ -372,7 +372,7 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
 
         <details className="rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
           <summary className="cursor-pointer text-sm font-semibold text-base-content/75">Arguments</summary>
-          <pre className="mt-4 overflow-x-auto rounded-2xl bg-neutral/95 p-4 font-mono text-xs leading-6 text-neutral-content">
+          <pre className="mt-4 overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
             {toolCall.argumentsText}
           </pre>
         </details>
@@ -407,7 +407,7 @@ function ToolResultCard({ result }: { result: ToolResultView }) {
 
       <details className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
         <summary className="cursor-pointer text-sm font-semibold text-base-content/75">Raw result</summary>
-        <pre className="mt-4 overflow-x-auto rounded-2xl bg-neutral/95 p-4 font-mono text-xs leading-6 text-neutral-content">
+        <pre className="mt-4 overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
           {rawPreview}
         </pre>
       </details>
