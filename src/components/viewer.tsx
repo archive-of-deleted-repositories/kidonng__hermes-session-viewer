@@ -190,12 +190,6 @@ export function SessionHeader({
               <span className="text-base-content/45">
                 <span className="font-medium text-base-content/65">{formatNumber(messageCount)}</span> msgs
               </span>
-              <span className="text-base-content/45">
-                <span className="font-medium text-base-content/65">{formatNumber(toolCallCount)}</span> tools
-              </span>
-              <span className="text-base-content/45">
-                <span className="font-medium text-base-content/65">{formatNumber(summary.totalTokens ?? summary.inputTokens ?? summary.outputTokens)}</span> tokens
-              </span>
             </div>
 
             <div className="flex items-center gap-2">
