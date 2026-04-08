@@ -14,7 +14,7 @@ import type {
   TranscriptMessage,
   ViewerData,
 } from '~/lib/hermes-types'
-import { renderMarkdown } from '~/lib/server/markdown'
+import { highlightCode, renderMarkdown } from '~/lib/server/markdown'
 
 const HERMES_HOME = process.env.HERMES_HOME || path.join(os.homedir(), '.hermes')
 const SESSIONS_DIR = path.join(HERMES_HOME, 'sessions')
@@ -310,6 +310,20 @@ async function toToolCallView(
   const preview = buildToolPreview(name, argumentsObject, rawArguments)
   const command = name === 'terminal' ? getStringArgument(argumentsObject, 'command') : undefined
 
+  const rendered: Record<string, string> = {}
+  if (command) {
+    rendered.command = await renderMarkdown(`\`\`\`sh\n${command}\n\`\`\``)
+  }
+
+  if (name === 'write_file') {
+    const filePath = getStringArgument(argumentsObject, 'path')
+    const content = getStringArgument(argumentsObject, 'content')
+    if (filePath && content) {
+      const lang = getLanguageFromPath(filePath)
+      rendered.content = await highlightCode(content, lang)
+    }
+  }
+
   return {
     id: callId,
     name,
@@ -320,7 +334,7 @@ async function toToolCallView(
     argumentsText:
       argumentsObject !== undefined ? JSON.stringify(argumentsObject, null, 2) : rawArguments || '{}',
     argumentsObject: isRecord(argumentsObject) ? (argumentsObject as { [key: string]: JsonValue }) : undefined,
-    renderedCommandHtml: command ? await renderMarkdown(`\`\`\`sh\n${command}\n\`\`\``) : undefined,
+    rendered,
     results: [],
   }
 }
@@ -332,13 +346,18 @@ async function toToolResultView(entry: RawEntry, raw: string): Promise<ToolResul
   const analysis = extractAnalysis(parsed)
   const summary = buildResultSummary(parsed, contentText)
 
+  const rendered: Record<string, string> = {}
+  if (analysis) {
+    rendered.analysis = await renderMarkdown(analysis)
+  }
+
   return {
     raw,
     status,
     summary,
     contentText,
     parsed: isJsonValue(parsed) ? parsed : undefined,
-    renderedAnalysisHtml: analysis ? await renderMarkdown(analysis) : undefined,
+    rendered,
   }
 }
 
@@ -463,6 +482,65 @@ function buildToolPreview(name: string, argumentsObject: unknown, rawArguments: 
   }
 
   return build('args', 'No arguments', 'text')
+}
+
+function getLanguageFromPath(filePath: string): string {
+  const ext = filePath.split('.').pop()?.toLowerCase()
+  const langMap: Record<string, string> = {
+    js: 'javascript',
+    jsx: 'javascript',
+    ts: 'typescript',
+    tsx: 'typescript',
+    py: 'python',
+    rb: 'ruby',
+    rs: 'rust',
+    go: 'go',
+    java: 'java',
+    c: 'c',
+    cpp: 'cpp',
+    h: 'c',
+    hpp: 'cpp',
+    cs: 'csharp',
+    swift: 'swift',
+    kt: 'kotlin',
+    kts: 'kotlin',
+    scala: 'scala',
+    php: 'php',
+    html: 'html',
+    htm: 'html',
+    css: 'css',
+    scss: 'scss',
+    sass: 'scss',
+    less: 'less',
+    json: 'json',
+    yaml: 'yaml',
+    yml: 'yaml',
+    toml: 'toml',
+    md: 'markdown',
+    mdx: 'markdown',
+    sh: 'bash',
+    bash: 'bash',
+    zsh: 'bash',
+    fish: 'bash',
+    ps1: 'powershell',
+    psd1: 'powershell',
+    psm1: 'powershell',
+    sql: 'sql',
+    graphql: 'graphql',
+    gql: 'graphql',
+    vim: 'vim',
+    lua: 'lua',
+    r: 'r',
+    R: 'r',
+    dart: 'dart',
+    ex: 'elixir',
+    exs: 'elixir',
+    erl: 'erlang',
+    hs: 'haskell',
+    ml: 'ocaml',
+    pls: 'plsql',
+  }
+  return langMap[ext ?? ''] ?? 'text'
 }
 
 function inferToolStatus(parsed: unknown): ToolResultStatus {

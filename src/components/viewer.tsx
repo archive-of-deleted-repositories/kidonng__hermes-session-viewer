@@ -342,30 +342,22 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
       </summary>
 
       <div className="mt-5 space-y-6">
-        {toolCall.renderedCommandHtml ? (
-          <MarkdownBlock html={toolCall.renderedCommandHtml} />
-        ) : null}
-
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-base-content/50 mb-3">Arguments</p>
-          {toolCall.argumentsObject ? (
-            <div className="overflow-x-auto rounded-2xl bg-base-200">
-              <JsonTable
-                data={toolCall.argumentsObject}
-                columns={toolCall.previewKind === 'link' ? { [toolCall.previewLabel]: 'url' } : undefined}
-              />
-            </div>
-          ) : (
-            <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
-              {toolCall.argumentsText}
-            </pre>
-          )}
-        </div>
+        {toolCall.argumentsObject ? (
+            <JsonTable
+              data={toolCall.argumentsObject}
+              columns={toolCall.previewKind === 'link' ? { [toolCall.previewLabel]: 'url' } : undefined}
+              rendered={toolCall.rendered}
+            />
+        ) : (
+          <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+            {toolCall.argumentsText}
+          </pre>
+        )}
 
         {toolCall.results.length > 0 && (
           <div className="border-t-2 border-base-300/80 pt-6">
             {toolCall.results.map((result, index) => (
-              <ToolResultCard key={`${toolCall.id}-result-${index}`} result={result} />
+              <ToolResultCard key={`${toolCall.id}-result-${index}`} result={result} toolName={toolCall.name} />
             ))}
           </div>
         )}
@@ -374,11 +366,11 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
   )
 }
 
-type JsonColumnType = 'url' | 'markdown' | 'code'
+type JsonColumnType = 'url' | 'pre' | 'html'
 
 type JsonColumns = Record<string, JsonColumnType>
 
-function JsonTable({ data, columns }: { data: Record<string, unknown> | unknown[]; columns?: JsonColumns }) {
+function JsonTable({ data, columns, rendered }: { data: Record<string, unknown> | unknown[]; columns?: JsonColumns; rendered?: Record<string, string> }) {
   const isArray = Array.isArray(data)
   const entries = isArray ? data.map((v, i) => [String(i), v] as [string, unknown]) : Object.entries(data)
 
@@ -389,6 +381,10 @@ function JsonTable({ data, columns }: { data: Record<string, unknown> | unknown[
     const str = String(value)
     const colType = columns?.[key]
 
+    if (rendered?.[key]) {
+      return <div className="md" dangerouslySetInnerHTML={{ __html: rendered[key] }} />
+    }
+
     if (colType === 'url') {
       return (
         <a href={str} target="_blank" rel="noreferrer" className="link link-primary break-all">
@@ -397,11 +393,7 @@ function JsonTable({ data, columns }: { data: Record<string, unknown> | unknown[
       )
     }
 
-    if (colType === 'markdown') {
-      return <MarkdownBlock html={str} />
-    }
-
-    if (colType === 'code') {
+    if (colType === 'pre') {
       return (
         <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
           <code>{str}</code>
@@ -409,51 +401,46 @@ function JsonTable({ data, columns }: { data: Record<string, unknown> | unknown[
       )
     }
 
-    return str
+    if (colType === 'html') {
+      return <div dangerouslySetInnerHTML={{ __html: str }} />
+    }
+
+    return <span className="font-mono text-xs break-all">{str}</span>
   }
 
   return (
-    <table className="w-full font-mono text-xs">
-      <tbody>
-        {entries.map(([key, value]) => (
-          <tr key={key} className="border-b border-base-300/50 last:border-0">
-            <td className="px-4 py-2 font-semibold text-base-content/50">{key}</td>
-            <td className="px-4 py-2 text-base-content/80">{renderValue(value, key)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="space-y-3">
+      {entries.map(([key, value]) => (
+        <div key={key}>
+          <div className="font-semibold text-xs text-base-content/50 uppercase tracking-[0.16em] mb-1">{key}</div>
+          <div className="text-base-content/80">{renderValue(value, key)}</div>
+        </div>
+      ))}
+    </div>
   )
 }
 
-function ToolResultCard({ result }: { result: ToolResultView }) {
+function ToolResultCard({ result, toolName }: { result: ToolResultView; toolName: string }) {
   const rawPreview = result.parsed ? JSON.stringify(result.parsed, null, 2) : result.contentText
+  const codeKeys: Record<string, string[]> = {
+    terminal: ['output'],
+    browser_snapshot: ['snapshot'],
+    browser_navigate: ['snapshot'],
+  }
+  const keys = codeKeys[toolName]
+  const columns: JsonColumns | undefined = keys ? Object.fromEntries(keys.map((k) => [k, 'pre'])) : undefined
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2">
-        {result.status === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
-        {result.summary ? <p className="text-sm text-base-content/70">{result.summary}</p> : null}
-      </div>
+      {result.status === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
 
-      {result.renderedAnalysisHtml ? (
-        <div className="rounded-3xl border border-base-300/70 bg-base-100/75 p-4 mt-4">
-          <MarkdownBlock html={result.renderedAnalysisHtml} />
-        </div>
-      ) : null}
-
-      <div className="mt-4">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-base-content/50 mb-3">Result</p>
-        {result.parsed && typeof result.parsed === 'object' ? (
-          <div className="overflow-x-auto rounded-2xl bg-base-200">
-            <JsonTable data={result.parsed} />
-          </div>
-        ) : (
-          <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
-            {rawPreview}
-          </pre>
-        )}
-      </div>
+      {result.parsed && typeof result.parsed === 'object' ? (
+          <JsonTable data={result.parsed} columns={columns} rendered={result.rendered} />
+      ) : (
+        <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+          {rawPreview}
+        </pre>
+      )}
     </div>
   )
 }

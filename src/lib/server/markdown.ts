@@ -25,3 +25,7 @@ export async function renderMarkdown(markdown: string): Promise<string> {
   const file = await markdownProcessor.process(markdown)
   return String(file)
 }
+
+export async function highlightCode(code: string, lang: string): Promise<string> {
+  return renderMarkdown(`\`\`\`${lang}\n${code}\n\`\`\``)
+}

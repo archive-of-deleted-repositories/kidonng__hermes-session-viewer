@@ -42,7 +42,7 @@ export type ToolResultView = {
   summary?: string
   contentText: string
   parsed?: JsonValue
-  renderedAnalysisHtml?: string
+  rendered: Record<string, string>
 }
 
 export type ToolCallView = {
@@ -54,7 +54,7 @@ export type ToolCallView = {
   previewKind: 'text' | 'code' | 'link'
   argumentsText: string
   argumentsObject?: { [key: string]: JsonValue }
-  renderedCommandHtml?: string
+  rendered: Record<string, string>
   results: ToolResultView[]
 }
 
