@@ -9,6 +9,12 @@ import type {
 } from '~/lib/hermes-types'
 import { CopyButton } from '~/components/copy-button'
 import { MarkdownBlock } from '~/components/markdown-block'
+import emojiMapData from '~/data/emoji-map.json'
+
+const emojiMap: Record<string, string> = emojiMapData.reduce(
+  (acc, { name, emoji }) => ({ ...acc, [name]: emoji }),
+  {}
+)
 
 type SidebarProps = {
   sessions: SessionSummary[]
@@ -335,7 +341,7 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-              {toolCall.name}
+              {emojiMap[toolCall.name] ?? ''} {toolCall.name}
             </span>
             <p className="tool-preview truncate font-mono text-xs leading-6 text-base-content/60">
               {toolCall.previewValue}
