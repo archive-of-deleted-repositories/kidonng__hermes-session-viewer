@@ -194,11 +194,15 @@
   .message-surface--assistant {
     background:
       linear-gradient(180deg, color-mix(in oklch, var(--color-base-100) 86%, white 14%), color-mix(in oklch, var(--color-primary) 4%, var(--color-base-100)));
+    margin-right: auto;
+    max-width: 70%;
   }
 
   .message-surface--user {
     background:
       linear-gradient(180deg, color-mix(in oklch, var(--color-base-100) 78%, white 22%), color-mix(in oklch, var(--color-secondary) 5%, var(--color-base-100)));
+    margin-left: auto;
+    max-width: 70%;
   }
 
   .message-surface--system {

@@ -238,30 +238,10 @@ export function MessageCard({
 
   return (
     <article
-      className={`message-surface ${roleClass}`.trim()}
+      className={`message-surface ${roleClass} group`.trim()}
       style={{ animationDelay: `${Math.min(index * 45, 320)}ms` }}
     >
-      <header className="flex flex-col gap-3 border-b border-base-300/70 pb-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="badge rounded-full border-none bg-base-content text-[11px] font-semibold uppercase tracking-[0.16em] text-base-100">
-              {message.role}
-            </span>
-          </div>
-
-          <time
-            className="mt-3 block font-mono text-xs uppercase tracking-[0.16em] text-base-content/45"
-            dateTime={message.timestamp}
-            title={message.timestamp}
-          >
-            {formatAbsoluteTime(message.timestamp)}
-          </time>
-        </div>
-
-        {message.content?.trim() ? <CopyButton text={message.content} /> : null}
-      </header>
-
-      <div className="space-y-5 pt-5">
+      <div className="space-y-5">
         {message.renderedReasoningHtml ? (
           <div>
             <button
@@ -287,7 +267,7 @@ export function MessageCard({
         ) : null}
 
         {message.toolCalls.length ? (
-          <div>
+          <div className="mb-4">
             {message.toolCalls.length === 1 ? (
               <ToolInvocationCard toolCall={message.toolCalls[0]} toolsOpen={toolsOpen} />
             ) : (
@@ -312,6 +292,19 @@ export function MessageCard({
           </div>
         ) : null}
       </div>
+
+      <footer className="mt-2 flex flex-row items-center justify-between gap-3">
+        <span className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
+          {message.content?.trim() ? <CopyButton text={message.content} /> : null}
+        </span>
+        <time
+          className="font-mono text-xs uppercase tracking-[0.16em] text-base-content/45"
+          dateTime={message.timestamp}
+          title={formatAbsoluteTime(message.timestamp)}
+        >
+          {formatShortTime(message.timestamp)}
+        </time>
+      </footer>
     </article>
   )
 }
@@ -463,6 +456,21 @@ function formatAbsoluteTime(value?: string) {
 
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
+}
+
+function formatShortTime(value?: string) {
+  if (!value) {
+    return '—'
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
     timeStyle: 'short',
   }).format(date)
 }

@@ -70,7 +70,7 @@ function ViewerRoute() {
                 onToolsOpenChange={setToolsOpen}
               />
 
-              <section className="mt-6 space-y-4">
+              <section className="mt-6 space-y-4 max-w-4xl mx-auto">
                 {data.transcript.messages.map((message, index) => (
                   <MessageCard
                     key={message.id}
