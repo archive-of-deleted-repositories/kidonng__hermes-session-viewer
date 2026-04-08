@@ -49,7 +49,9 @@ function ViewerRoute() {
     }
   }
 
-  applyTheme(theme)
+  if (typeof document !== 'undefined') {
+    applyTheme(theme)
+  }
 
   return (
     <div className="drawer lg:drawer-open min-h-screen">

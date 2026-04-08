@@ -42,7 +42,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="hermes">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
