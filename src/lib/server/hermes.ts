@@ -16,9 +16,10 @@ import type {
 } from '~/lib/hermes-types'
 import { renderMarkdown } from '~/lib/server/markdown'
 
-const SESSIONS_DIR = path.join(os.homedir(), '.hermes', 'sessions')
+const HERMES_HOME = process.env.HERMES_HOME || path.join(os.homedir(), '.hermes')
+const SESSIONS_DIR = path.join(HERMES_HOME, 'sessions')
 const SESSION_INDEX_PATH = path.join(SESSIONS_DIR, 'sessions.json')
-const STATE_DB_PATH = path.join(os.homedir(), '.hermes', 'state.db')
+const STATE_DB_PATH = path.join(HERMES_HOME, 'state.db')
 
 type ViewerRequest = {
   sessionId?: string
