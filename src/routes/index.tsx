@@ -28,10 +28,10 @@ function ViewerRoute() {
   const data = Route.useLoaderData() as ViewerData
   const [filter, setFilter] = useState('')
   const [reasoningOpen, setReasoningOpen] = useLocalStorageState('hermes-viewer-reasoning-open', {
-    defaultValue: true,
+    defaultValue: false,
   })
   const [toolsOpen, setToolsOpen] = useLocalStorageState('hermes-viewer-tools-open', {
-    defaultValue: true,
+    defaultValue: false,
   })
   const [theme, setTheme] = useLocalStorageState('hermes-viewer-theme', {
     defaultValue: 'system',
