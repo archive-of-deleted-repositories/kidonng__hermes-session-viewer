@@ -324,9 +324,9 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
       : 'unknown'
 
   return (
-    <div
+    <details
       className={`tool-panel ${resultStatus === 'error' ? 'tool-panel--error' : ''}`.trim()}
-      key={`${toolCall.id}-${toolsOpen ? 'open' : 'closed'}`}
+      open={toolsOpen}
     >
       <summary className="flex cursor-pointer list-none flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
@@ -378,7 +378,7 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
           <ToolResultCard key={`${toolCall.id}-result-${index}`} result={result} />
         ))}
       </div>
-    </div>
+    </details>
   )
 }
 
