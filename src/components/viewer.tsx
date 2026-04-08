@@ -32,9 +32,9 @@ type MessageCardProps = {
   message: TranscriptMessage
   index: number
   reasoningOpen: boolean
+  onReasoningOpenChange: (value: boolean) => void
   toolsOpen: boolean
-  onReasoningToggle: () => void
-  onToolsToggle: () => void
+  onToolsOpenChange: (value: boolean) => void
 }
 
 export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChange }: SidebarProps) {
@@ -225,9 +225,9 @@ export function MessageCard({
   message,
   index,
   reasoningOpen,
+  onReasoningOpenChange,
   toolsOpen,
-  onReasoningToggle,
-  onToolsToggle,
+  onToolsOpenChange,
 }: MessageCardProps) {
   const roleClass =
     message.role === 'assistant'
@@ -243,21 +243,15 @@ export function MessageCard({
     >
       <div className="space-y-5">
         {message.renderedReasoningHtml ? (
-          <div>
-            <button
-              type="button"
-              onClick={onReasoningToggle}
-              className="flex items-center gap-2 text-sm font-semibold tracking-[0.08em] text-base-content/70"
-            >
-              <span className={`transition-transform ${reasoningOpen ? 'rotate-90' : ''}`}>▶</span>
+          <details className="group" open={reasoningOpen}>
+            <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold tracking-[0.08em] text-base-content/70">
+              <span className="transition-transform duration-200 group-open:rotate-90">▶</span>
               Reasoning
-            </button>
-            {reasoningOpen && (
-              <div className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
-                <MarkdownBlock html={message.renderedReasoningHtml} className="md--reasoning" />
-              </div>
-            )}
-          </div>
+            </summary>
+            <div className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
+              <MarkdownBlock html={message.renderedReasoningHtml} className="md--reasoning" />
+            </div>
+          </details>
         ) : null}
 
         {message.renderedContentHtml ? <MarkdownBlock html={message.renderedContentHtml} /> : null}
@@ -272,21 +266,17 @@ export function MessageCard({
               <ToolInvocationCard toolCall={message.toolCalls[0]} toolsOpen={toolsOpen} />
             ) : (
               <>
-                <button
-                  type="button"
-                  onClick={onToolsToggle}
-                  className="flex items-center gap-2 text-sm font-semibold tracking-[0.08em] text-base-content/70"
-                >
-                  <span className={`transition-transform ${toolsOpen ? 'rotate-90' : ''}`}>▶</span>
-                  Tool calls ({message.toolCalls.length})
-                </button>
-                {toolsOpen && (
+                <details className="group" open={toolsOpen}>
+                  <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold tracking-[0.08em] text-base-content/70">
+                    <span className="transition-transform duration-200 group-open:rotate-90">▶</span>
+                    Tool calls ({message.toolCalls.length})
+                  </summary>
                   <div className="mt-4 space-y-3">
                     {message.toolCalls.map((toolCall) => (
                       <ToolInvocationCard key={toolCall.id} toolCall={toolCall} toolsOpen={toolsOpen} />
                     ))}
                   </div>
-                )}
+                </details>
               </>
             )}
           </div>

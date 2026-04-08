@@ -28,18 +28,14 @@ function ViewerRoute() {
   const data = Route.useLoaderData() as ViewerData
   const [filter, setFilter] = useState('')
   const [reasoningOpen, setReasoningOpen] = useLocalStorageState('hermes-viewer-reasoning-open', {
-    defaultValue: false,
+    defaultValue: true,
   })
   const [toolsOpen, setToolsOpen] = useLocalStorageState('hermes-viewer-tools-open', {
     defaultValue: true,
   })
 
-  function handleReasoningToggle() {
-    setReasoningOpen((prev) => !prev)
-  }
-
-  function handleToolsToggle() {
-    setToolsOpen((prev) => !prev)
+  function handleReasoningOpenChange(value: boolean) {
+    setReasoningOpen(value)
   }
 
   return (
@@ -65,7 +61,7 @@ function ViewerRoute() {
                 messageCount={data.transcript.messageCount}
                 toolCallCount={data.transcript.toolCallCount}
                 reasoningOpen={reasoningOpen}
-                onReasoningOpenChange={setReasoningOpen}
+                onReasoningOpenChange={handleReasoningOpenChange}
                 toolsOpen={toolsOpen}
                 onToolsOpenChange={setToolsOpen}
               />
@@ -77,9 +73,9 @@ function ViewerRoute() {
                     message={message}
                     index={index}
                     reasoningOpen={reasoningOpen}
+                    onReasoningOpenChange={handleReasoningOpenChange}
                     toolsOpen={toolsOpen}
-                    onReasoningToggle={handleReasoningToggle}
-                    onToolsToggle={handleToolsToggle}
+                    onToolsOpenChange={setToolsOpen}
                   />
                 ))}
               </section>
