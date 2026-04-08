@@ -73,8 +73,10 @@ export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChan
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-base-content/45">Hermes</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-base-content">Session Viewer</h1>
         <div className="mt-4 flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">Theme</span>
+          <label htmlFor="theme-select" className="text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">Theme</label>
           <select
+            id="theme-select"
+            aria-label="Theme"
             className="select select-bordered select-sm w-auto rounded-xl"
             value={theme}
             onChange={(e) => onThemeChange(e.target.value)}
