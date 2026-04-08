@@ -165,7 +165,7 @@ async function loadTranscript(summary: SessionSummary): Promise<SessionTranscrip
     .filter((value): value is ParsedLine => value !== null)
 
   const metaEntry = parsedLines.find((line) => toStringValue(line.entry.role) === 'session_meta')?.entry
-  const meta = buildSessionMeta(summary, metaEntry, metaFile, jsonlPath, summaryPath)
+  const meta = await buildSessionMeta(summary, metaEntry, metaFile, jsonlPath, summaryPath)
   const messages = await buildMessages(parsedLines)
 
   return {
@@ -309,18 +309,21 @@ async function toToolResultView(entry: RawEntry, raw: string): Promise<ToolResul
   }
 }
 
-function buildSessionMeta(
+async function buildSessionMeta(
   summary: SessionSummary,
   metaEntry: RawEntry | undefined,
   metaFile: Record<string, unknown> | null,
   jsonlPath: string,
   summaryPath: string,
-): SessionMetaInfo {
+): Promise<SessionMetaInfo> {
   const metaToolCount = Array.isArray(metaEntry?.tools)
     ? metaEntry.tools.length
     : Array.isArray(metaFile?.tools)
       ? metaFile.tools.length
       : 0
+
+  const systemPrompt = toStringValue(metaFile?.system_prompt)
+  const renderedSystemPromptHtml = systemPrompt ? await renderMarkdown(systemPrompt) : undefined
 
   return {
     sessionId: summary.sessionId,
@@ -336,7 +339,8 @@ function buildSessionMeta(
       toStringValue(metaFile?.last_updated) ??
       summary.updatedAt,
     toolCount: metaToolCount,
-    systemPrompt: toStringValue(metaFile?.system_prompt),
+    systemPrompt,
+    renderedSystemPromptHtml,
     jsonlPath,
     summaryPath: metaFile ? summaryPath : undefined,
   }

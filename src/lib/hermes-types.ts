@@ -79,6 +79,7 @@ export type SessionMetaInfo = {
   lastUpdated?: string
   toolCount: number
   systemPrompt?: string
+  renderedSystemPromptHtml?: string
   jsonlPath: string
   summaryPath?: string
 }

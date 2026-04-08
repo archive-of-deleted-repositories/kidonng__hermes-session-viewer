@@ -153,85 +153,91 @@ export function SessionHeader({
   onToolsOpenChange,
 }: SessionHeaderProps) {
   return (
-    <section className="panel-shell overflow-hidden px-5 py-5 sm:px-6">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-base-content/45">Session meta</p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">{summary.displayName}</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-base-content/65">{summary.sessionKey}</p>
+    <>
+      <section className="sticky top-4 lg:top-7 z-10 rounded-2xl border border-base-300/70 bg-base-100/90 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 lg:px-6">
+          <div className="flex min-w-0 flex-1 items-center gap-4">
+            <div className="min-w-0">
+              <h2 className="truncate text-lg font-bold tracking-tight text-base-content">{summary.displayName}</h2>
+              <p className="truncate font-mono text-xs text-base-content/45">{meta.sessionId}</p>
+            </div>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="badge badge-primary badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-              {summary.platform ?? 'local'}
-            </span>
-            {summary.chatType ? (
-              <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                {summary.chatType}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="badge badge-primary badge-soft rounded-full px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]">
+                {summary.platform ?? 'local'}
               </span>
-            ) : null}
-            {meta.model ? (
-              <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                {meta.model}
+              {summary.chatType ? (
+                <span className="badge badge-outline rounded-full px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]">
+                  {summary.chatType}
+                </span>
+              ) : null}
+              {meta.model ? (
+                <span className="badge badge-outline rounded-full px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]">
+                  {meta.model}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-base-content/45">
+                <span className="font-medium text-base-content/65">{formatNumber(messageCount)}</span> msgs
               </span>
-            ) : null}
-            <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-              {meta.toolCount} tools
-            </span>
+              <span className="text-base-content/45">
+                <span className="font-medium text-base-content/65">{formatNumber(toolCallCount)}</span> tools
+              </span>
+              <span className="text-base-content/45">
+                <span className="font-medium text-base-content/65">{formatNumber(summary.totalTokens ?? summary.inputTokens ?? summary.outputTokens)}</span> tokens
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {meta.systemPrompt ? (
+                <button
+                  type="button"
+                  onClick={() => (document.getElementById('system-prompt-modal') as HTMLDialogElement | null)?.showModal()}
+                  className="btn btn-sm btn-ghost rounded-full px-3 text-xs font-medium"
+                >
+                  System prompt
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => onReasoningOpenChange(!reasoningOpen)}
+                className="btn btn-sm btn-ghost rounded-full px-3 text-xs font-medium"
+              >
+                {reasoningOpen ? '✓' : '○'} Reasoning
+              </button>
+              <button
+                type="button"
+                onClick={() => onToolsOpenChange(!toolsOpen)}
+                className="btn btn-sm btn-ghost rounded-full px-3 text-xs font-medium"
+              >
+                {toolsOpen ? '✓' : '○'} Tools
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="flex flex-wrap gap-3 lg:max-w-md lg:justify-end">
-          <MetricTile label="Updated" value={formatAbsoluteTime(meta.lastUpdated)} accent="secondary" />
-          <MetricTile label="Messages" value={formatNumber(messageCount)} accent="primary" />
-          <MetricTile label="Tool Calls" value={formatNumber(toolCallCount)} accent="accent" />
-          <MetricTile
-            label="Tokens"
-            value={formatNumber(summary.totalTokens ?? summary.inputTokens ?? summary.outputTokens)}
-            accent="info"
-          />
-        </div>
-      </div>
-
-      <div className="mt-6 flex flex-col gap-5 border-t border-base-300/70 pt-5 xl:flex-row xl:items-end xl:justify-between">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <MetaLine label="Started" value={formatAbsoluteTime(meta.sessionStart)} />
-          <MetaLine label="Cost" value={formatCurrency(summary.estimatedCostUsd, summary.costStatus)} />
-          <MetaLine label="Files" value={meta.summaryPath ? 'index + jsonl + summary' : 'index + jsonl'} />
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <button
-            type="button"
-            onClick={() => onReasoningOpenChange(!reasoningOpen)}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-base-300/70 bg-base-100/75 px-4 py-3 text-sm font-medium text-base-content/80"
-          >
-            <span>Reasoning {reasoningOpen ? 'shown' : 'hidden'}</span>
-            <span className={`text-xs font-semibold ${reasoningOpen ? 'text-primary' : 'text-base-content/45'}`}>
-              {reasoningOpen ? '✓' : '○'}
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onToolsOpenChange(!toolsOpen)}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-base-300/70 bg-base-100/75 px-4 py-3 text-sm font-medium text-base-content/80"
-          >
-            <span>Tool calls {toolsOpen ? 'shown' : 'hidden'}</span>
-            <span className={`text-xs font-semibold ${toolsOpen ? 'text-secondary' : 'text-base-content/45'}`}>
-              {toolsOpen ? '✓' : '○'}
-            </span>
-          </button>
-        </div>
-      </div>
+      </section>
 
       {meta.systemPrompt ? (
-        <details className="mt-5 rounded-3xl border border-base-300/70 bg-base-100/70 p-4">
-          <summary className="cursor-pointer text-sm font-semibold text-base-content/85">System prompt</summary>
-          <pre className="mt-4 overflow-x-auto rounded-2xl bg-neutral/95 p-4 font-mono text-xs leading-6 text-neutral-content">
-            {meta.systemPrompt}
-          </pre>
-        </details>
+        <dialog id="system-prompt-modal" className="modal">
+          <div className="modal-box max-w-3xl">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 className="text-lg font-bold">System Prompt</h3>
+            <div className="mt-4 max-h-[60vh] overflow-y-auto">
+              <MarkdownBlock html={meta.renderedSystemPromptHtml} className="text-sm" />
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
       ) : null}
-    </section>
+    </>
   )
 }
 
