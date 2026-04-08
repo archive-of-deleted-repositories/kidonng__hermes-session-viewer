@@ -258,7 +258,7 @@ export function MessageCard({
           </time>
         </div>
 
-        <CopyButton text={message.rawBundle} />
+        {message.content?.trim() ? <CopyButton text={message.content} /> : null}
       </header>
 
       <div className="space-y-5 pt-5">
@@ -394,8 +394,6 @@ function ToolResultCard({ result }: { result: ToolResultView }) {
             {result.summary ? <p className="text-sm text-base-content/70">{result.summary}</p> : null}
           </div>
         </div>
-
-        <CopyButton text={result.raw} />
       </div>
 
       {result.renderedAnalysisHtml ? (

@@ -5,7 +5,7 @@ type CopyButtonProps = {
   label?: string
 }
 
-export function CopyButton({ text, label = 'Copy raw' }: CopyButtonProps) {
+export function CopyButton({ text, label = 'Copy' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {

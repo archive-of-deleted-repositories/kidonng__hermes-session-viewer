@@ -68,7 +68,6 @@ export type TranscriptMessage = {
   renderedReasoningHtml?: string
   finishReason?: string
   toolCalls: ToolCallView[]
-  rawBundle: string
 }
 
 export type SessionMetaInfo = {

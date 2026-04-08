@@ -197,7 +197,6 @@ async function buildMessages(parsedLines: ParsedLine[]): Promise<TranscriptMessa
         const pendingCall = pending.get(toolCallId)
         if (pendingCall) {
           pendingCall.call.results.push(result)
-          pendingCall.message.rawBundle = `${pendingCall.message.rawBundle}\n${parsedLine.raw}`
           pending.delete(toolCallId)
         }
         continue
@@ -233,7 +232,7 @@ async function toTranscriptMessage(
   )
 
   return {
-    id: `${toStringValue(entry.role) ?? 'message'}-${toStringValue(entry.timestamp) ?? index}`,
+    id: `${toStringValue(entry.role) ?? 'message'}-${toStringValue(entry.timestamp) ?? index}-${index}`,
     role: toStringValue(entry.role) ?? 'unknown',
     timestamp: toStringValue(entry.timestamp),
     content,
@@ -242,7 +241,6 @@ async function toTranscriptMessage(
     renderedReasoningHtml: reasoning ? await renderMarkdown(reasoning) : undefined,
     finishReason: toStringValue(entry.finish_reason),
     toolCalls,
-    rawBundle: raw,
   }
 }
 
@@ -255,13 +253,12 @@ async function toOrphanToolMessage(
   const jsonBlock = content ? `\`\`\`json\n${content}\n\`\`\`` : ''
 
   return {
-    id: `tool-${toStringValue(entry.timestamp) ?? index}`,
+    id: `tool-${toStringValue(entry.timestamp) ?? index}-${index}`,
     role: 'tool',
     timestamp: toStringValue(entry.timestamp),
     content,
     renderedContentHtml: jsonBlock ? await renderMarkdown(jsonBlock) : undefined,
     toolCalls: [],
-    rawBundle: raw,
   }
 }
 
