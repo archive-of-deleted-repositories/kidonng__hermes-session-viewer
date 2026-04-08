@@ -33,10 +33,23 @@ function ViewerRoute() {
   const [toolsOpen, setToolsOpen] = useLocalStorageState('hermes-viewer-tools-open', {
     defaultValue: true,
   })
+  const [theme, setTheme] = useLocalStorageState('hermes-viewer-theme', {
+    defaultValue: 'system',
+  })
 
   function handleReasoningOpenChange(value: boolean) {
     setReasoningOpen(value)
   }
+
+  function applyTheme(themeValue: string) {
+    if (themeValue === 'system') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', themeValue)
+    }
+  }
+
+  applyTheme(theme)
 
   return (
     <div className="drawer lg:drawer-open min-h-screen">
@@ -102,6 +115,8 @@ function ViewerRoute() {
             activeSessionId={data.activeSessionId}
             filter={filter}
             onFilterChange={setFilter}
+            theme={theme}
+            onThemeChange={setTheme}
           />
         </div>
       </div>

@@ -15,6 +15,8 @@ type SidebarProps = {
   activeSessionId?: string
   filter: string
   onFilterChange: (value: string) => void
+  theme: string
+  onThemeChange: (value: string) => void
 }
 
 type SessionHeaderProps = {
@@ -37,7 +39,7 @@ type MessageCardProps = {
   onToolsOpenChange: (value: boolean) => void
 }
 
-export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChange }: SidebarProps) {
+export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChange, theme, onThemeChange }: SidebarProps) {
   const deferredFilter = useDeferredValue(filter)
   const normalizedFilter = deferredFilter.trim().toLowerCase()
   const visibleSessions = sessions.filter((session) => {
@@ -67,6 +69,18 @@ export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChan
         <p className="mt-2 max-w-xs text-sm leading-6 text-base-content/65">
           Read-only transcript explorer for local Hermes conversations, tool usage, and reasoning trails.
         </p>
+        <div className="mt-4 flex items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">Theme</span>
+          <select
+            className="select select-bordered select-sm w-auto rounded-xl"
+            value={theme}
+            onChange={(e) => onThemeChange(e.target.value)}
+          >
+            <option value="system">System</option>
+            <option value="hermes">Light</option>
+            <option value="hermes-dark">Dark</option>
+          </select>
+        </div>
         <label className="mt-4 block">
           <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-base-content/45">
             Filter sessions
