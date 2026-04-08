@@ -3,9 +3,10 @@ import { useState } from 'react'
 type CopyButtonProps = {
   text: string
   label?: string
+  className?: string
 }
 
-export function CopyButton({ text, label = 'Copy' }: CopyButtonProps) {
+export function CopyButton({ text, label = 'Copy', className = '' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
@@ -19,7 +20,7 @@ export function CopyButton({ text, label = 'Copy' }: CopyButtonProps) {
   }
 
   return (
-    <button type="button" className="btn btn-xs btn-ghost font-medium normal-case" onClick={handleCopy}>
+    <button type="button" className={`btn btn-xs btn-ghost font-medium normal-case ${className}`} onClick={handleCopy}>
       {copied ? 'Copied' : label}
     </button>
   )

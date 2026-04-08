@@ -4,6 +4,35 @@ import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
+import type { Element } from 'hast'
+
+interface Transformer {
+  name: string
+  pre(node: Element): void
+}
+
+function transformerCopyButton(): Transformer {
+  return {
+    name: 'copy-button',
+    pre(node: Element) {
+      const lang = node.properties.dataLanguage as string | undefined
+
+      const copyButton: Element = {
+        type: 'element',
+        tagName: 'button',
+        properties: {
+          type: 'button',
+          className: ['floating-copy-button', 'btn', 'btn-xs', 'btn-ghost', 'font-medium', 'normal-case'],
+          ['data-lang']: lang || '',
+          onClick: 'window.__copyCode(this)',
+        },
+        children: [{ type: 'text', value: 'Copy' }],
+      } as Element
+
+      node.children = [copyButton, ...node.children]
+    },
+  }
+}
 
 const markdownProcessor = unified()
   .use(remarkParse)
@@ -14,6 +43,7 @@ const markdownProcessor = unified()
       light: 'github-light',
       dark: 'github-dark',
     },
+    transformers: [transformerCopyButton()],
   })
   .use(rehypeStringify)
 
@@ -23,7 +53,13 @@ export async function renderMarkdown(markdown: string): Promise<string> {
   }
 
   const file = await markdownProcessor.process(markdown)
-  return String(file)
+  const html = String(file)
+
+  if (!html.includes('__copyCode')) return html
+
+  const script = `<script>window.__copyCode=function(btn){var pre=btn.nextElementSibling;if(!pre)return; navigator.clipboard.writeText(pre.textContent||'').then(()=>{btn.textContent='Copied';btn._copied=true;setTimeout(()=>{btn.textContent='Copy';btn._copied=false},1600)}).catch(()=>{btn.textContent='Error'})}</script>`
+
+  return html.replace('</pre>', '</pre>' + script)
 }
 
 export async function highlightCode(code: string, lang: string): Promise<string> {

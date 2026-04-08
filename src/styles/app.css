@@ -353,6 +353,21 @@
     padding: 0;
   }
 
+  .floating-copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    z-index: 10;
+    transition: opacity 180ms ease;
+  }
+
+  .md pre:hover .floating-copy-button,
+  .md pre:focus-within .floating-copy-button,
+  div.relative:hover .floating-copy-button {
+    opacity: 1;
+  }
+
   .md :where(h1, h2, h3) {
     font-weight: 700;
     letter-spacing: -0.025em;

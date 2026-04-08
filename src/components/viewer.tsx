@@ -382,7 +382,7 @@ function JsonTable({ data, columns, rendered }: { data: Record<string, unknown> 
     const colType = columns?.[key]
 
     if (rendered?.[key]) {
-      return <div className="md" dangerouslySetInnerHTML={{ __html: rendered[key] }} />
+      return <div className="md relative" dangerouslySetInnerHTML={{ __html: rendered[key] }} />
     }
 
     if (colType === 'url') {
@@ -395,9 +395,12 @@ function JsonTable({ data, columns, rendered }: { data: Record<string, unknown> 
 
     if (colType === 'pre') {
       return (
-        <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
-          <code>{str}</code>
-        </pre>
+        <div className="relative">
+          <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+            <code>{str}</code>
+          </pre>
+          <CopyButton text={str} className="floating-copy-button" />
+        </div>
       )
     }
 
