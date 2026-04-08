@@ -1,0 +1,190 @@
+[
+  {
+    "name": "browser_navigate",
+    "emoji": "🌐"
+  },
+  {
+    "name": "browser_snapshot",
+    "emoji": "📸"
+  },
+  {
+    "name": "browser_click",
+    "emoji": "👆"
+  },
+  {
+    "name": "browser_type",
+    "emoji": "⌨️"
+  },
+  {
+    "name": "browser_scroll",
+    "emoji": "📜"
+  },
+  {
+    "name": "browser_back",
+    "emoji": "◀️"
+  },
+  {
+    "name": "browser_press",
+    "emoji": "⌨️"
+  },
+  {
+    "name": "browser_get_images",
+    "emoji": "🖼️"
+  },
+  {
+    "name": "browser_vision",
+    "emoji": "👁️"
+  },
+  {
+    "name": "browser_console",
+    "emoji": "🖥️"
+  },
+  {
+    "name": "clarify",
+    "emoji": "❓"
+  },
+  {
+    "name": "execute_code",
+    "emoji": "🐍"
+  },
+  {
+    "name": "cronjob",
+    "emoji": "⏰"
+  },
+  {
+    "name": "delegate_task",
+    "emoji": "🔀"
+  },
+  {
+    "name": "read_file",
+    "emoji": "📖"
+  },
+  {
+    "name": "write_file",
+    "emoji": "✍️"
+  },
+  {
+    "name": "patch",
+    "emoji": "🔧"
+  },
+  {
+    "name": "search_files",
+    "emoji": "🔎"
+  },
+  {
+    "name": "ha_list_entities",
+    "emoji": "🏠"
+  },
+  {
+    "name": "ha_get_state",
+    "emoji": "🏠"
+  },
+  {
+    "name": "ha_list_services",
+    "emoji": "🏠"
+  },
+  {
+    "name": "ha_call_service",
+    "emoji": "🏠"
+  },
+  {
+    "name": "image_generate",
+    "emoji": "🎨"
+  },
+  {
+    "name": "memory",
+    "emoji": "🧠"
+  },
+  {
+    "name": "mixture_of_agents",
+    "emoji": "🧠"
+  },
+  {
+    "name": "process",
+    "emoji": "⚙️"
+  },
+  {
+    "name": "rl_list_environments",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_select_environment",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_get_current_config",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_edit_config",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_start_training",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_check_status",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_stop_training",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_get_results",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_list_runs",
+    "emoji": "🧪"
+  },
+  {
+    "name": "rl_test_inference",
+    "emoji": "🧪"
+  },
+  {
+    "name": "send_message",
+    "emoji": "📨"
+  },
+  {
+    "name": "session_search",
+    "emoji": "🔍"
+  },
+  {
+    "name": "skill_manage",
+    "emoji": "📝"
+  },
+  {
+    "name": "skills_list",
+    "emoji": "📚"
+  },
+  {
+    "name": "skill_view",
+    "emoji": "📚"
+  },
+  {
+    "name": "terminal",
+    "emoji": "💻"
+  },
+  {
+    "name": "todo",
+    "emoji": "📋"
+  },
+  {
+    "name": "text_to_speech",
+    "emoji": "🔊"
+  },
+  {
+    "name": "vision_analyze",
+    "emoji": "👁️"
+  },
+  {
+    "name": "web_search",
+    "emoji": "🔍"
+  },
+  {
+    "name": "web_extract",
+    "emoji": "📄"
+  }
+]
