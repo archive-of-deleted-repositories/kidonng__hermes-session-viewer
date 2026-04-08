@@ -8,6 +8,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import * as React from 'react'
 import appCss from '~/styles/app.css?url'
+import emojiFavicon from '~/data/emoji-favicon.svg?url'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -27,7 +28,10 @@ export const Route = createRootRoute({
         content: 'Read-only viewer for Hermes Agent conversation sessions.',
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: emojiFavicon },
+    ],
   }),
   component: RootComponent,
 })
