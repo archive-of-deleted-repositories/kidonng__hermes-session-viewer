@@ -225,11 +225,11 @@ export function SessionHeader({
         <dialog id="system-prompt-modal" className="modal">
           <div className="modal-box max-w-3xl">
             <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">✕</button>
             </form>
             <h3 className="text-lg font-bold">System Prompt</h3>
             <div className="mt-4 max-h-[60vh] overflow-y-auto">
-              <MarkdownBlock html={meta.renderedSystemPromptHtml} className="text-sm" />
+              <MarkdownBlock html={meta.renderedSystemPromptHtml} />
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">
