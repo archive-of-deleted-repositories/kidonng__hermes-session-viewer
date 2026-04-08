@@ -34,6 +34,14 @@ function ViewerRoute() {
     defaultValue: true,
   })
 
+  function handleReasoningToggle() {
+    setReasoningOpen((prev) => !prev)
+  }
+
+  function handleToolsToggle() {
+    setToolsOpen((prev) => !prev)
+  }
+
   return (
     <div className="drawer lg:drawer-open min-h-screen">
       <input id="session-drawer" type="checkbox" className="drawer-toggle" />
@@ -50,7 +58,7 @@ function ViewerRoute() {
           </div>
 
           {data.transcript ? (
-            <>
+            <div key={data.activeSessionId}>
               <SessionHeader
                 summary={data.transcript.summary}
                 meta={data.transcript.meta}
@@ -70,10 +78,12 @@ function ViewerRoute() {
                     index={index}
                     reasoningOpen={reasoningOpen}
                     toolsOpen={toolsOpen}
+                    onReasoningToggle={handleReasoningToggle}
+                    onToolsToggle={handleToolsToggle}
                   />
                 ))}
               </section>
-            </>
+            </div>
           ) : (
             <section className="panel-shell flex min-h-[60vh] items-center justify-center px-6 py-12 text-center">
               <div className="max-w-lg">

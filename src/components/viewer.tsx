@@ -33,6 +33,8 @@ type MessageCardProps = {
   index: number
   reasoningOpen: boolean
   toolsOpen: boolean
+  onReasoningToggle: () => void
+  onToolsToggle: () => void
 }
 
 export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChange }: SidebarProps) {
@@ -184,24 +186,26 @@ export function SessionHeader({
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-base-300/70 bg-base-100/75 px-4 py-3 text-sm font-medium text-base-content/80">
-            <span>Reasoning open by default</span>
-            <input
-              type="checkbox"
-              className="toggle toggle-sm toggle-primary"
-              checked={reasoningOpen}
-              onChange={(event) => onReasoningOpenChange(event.target.checked)}
-            />
-          </label>
-          <label className="flex items-center justify-between gap-3 rounded-2xl border border-base-300/70 bg-base-100/75 px-4 py-3 text-sm font-medium text-base-content/80">
-            <span>Tool calls open by default</span>
-            <input
-              type="checkbox"
-              className="toggle toggle-sm toggle-secondary"
-              checked={toolsOpen}
-              onChange={(event) => onToolsOpenChange(event.target.checked)}
-            />
-          </label>
+          <button
+            type="button"
+            onClick={() => onReasoningOpenChange(!reasoningOpen)}
+            className="flex items-center justify-between gap-3 rounded-2xl border border-base-300/70 bg-base-100/75 px-4 py-3 text-sm font-medium text-base-content/80"
+          >
+            <span>Reasoning {reasoningOpen ? 'shown' : 'hidden'}</span>
+            <span className={`text-xs font-semibold ${reasoningOpen ? 'text-primary' : 'text-base-content/45'}`}>
+              {reasoningOpen ? '✓' : '○'}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onToolsOpenChange(!toolsOpen)}
+            className="flex items-center justify-between gap-3 rounded-2xl border border-base-300/70 bg-base-100/75 px-4 py-3 text-sm font-medium text-base-content/80"
+          >
+            <span>Tool calls {toolsOpen ? 'shown' : 'hidden'}</span>
+            <span className={`text-xs font-semibold ${toolsOpen ? 'text-secondary' : 'text-base-content/45'}`}>
+              {toolsOpen ? '✓' : '○'}
+            </span>
+          </button>
         </div>
       </div>
 
@@ -217,7 +221,14 @@ export function SessionHeader({
   )
 }
 
-export function MessageCard({ message, index, reasoningOpen, toolsOpen }: MessageCardProps) {
+export function MessageCard({
+  message,
+  index,
+  reasoningOpen,
+  toolsOpen,
+  onReasoningToggle,
+  onToolsToggle,
+}: MessageCardProps) {
   const roleClass =
     message.role === 'assistant'
       ? 'message-surface--assistant'
@@ -236,11 +247,6 @@ export function MessageCard({ message, index, reasoningOpen, toolsOpen }: Messag
             <span className="badge rounded-full border-none bg-base-content text-[11px] font-semibold uppercase tracking-[0.16em] text-base-100">
               {message.role}
             </span>
-            {message.finishReason ? (
-              <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                {message.finishReason}
-              </span>
-            ) : null}
           </div>
 
           <time
@@ -256,34 +262,54 @@ export function MessageCard({ message, index, reasoningOpen, toolsOpen }: Messag
       </header>
 
       <div className="space-y-5 pt-5">
+        {message.renderedReasoningHtml ? (
+          <div>
+            <button
+              type="button"
+              onClick={onReasoningToggle}
+              className="flex items-center gap-2 text-sm font-semibold tracking-[0.08em] text-base-content/70"
+            >
+              <span className={`transition-transform ${reasoningOpen ? 'rotate-90' : ''}`}>▶</span>
+              Reasoning
+            </button>
+            {reasoningOpen && (
+              <div className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
+                <MarkdownBlock html={message.renderedReasoningHtml} className="md--reasoning" />
+              </div>
+            )}
+          </div>
+        ) : null}
+
         {message.renderedContentHtml ? <MarkdownBlock html={message.renderedContentHtml} /> : null}
 
         {!message.renderedContentHtml && !message.toolCalls.length && message.role === 'assistant' ? (
           <p className="text-sm leading-6 text-base-content/55">This assistant turn only contains metadata.</p>
         ) : null}
 
-        {message.renderedReasoningHtml ? (
-          <details key={`${message.id}-reasoning-${reasoningOpen ? 'open' : 'closed'}`} defaultOpen={reasoningOpen}>
-            <summary className="cursor-pointer text-sm font-semibold tracking-[0.08em] text-base-content/70">
-              Reasoning
-            </summary>
-            <div className="mt-4 rounded-3xl border border-base-300/70 bg-base-100/65 p-4">
-              <MarkdownBlock html={message.renderedReasoningHtml} className="md--reasoning" />
-            </div>
-          </details>
-        ) : null}
-
         {message.toolCalls.length ? (
-          <details key={`${message.id}-tools-${toolsOpen ? 'open' : 'closed'}`} defaultOpen={toolsOpen}>
-            <summary className="cursor-pointer text-sm font-semibold tracking-[0.08em] text-base-content/70">
-              Tool calls ({message.toolCalls.length})
-            </summary>
-            <div className="mt-4 space-y-3">
-              {message.toolCalls.map((toolCall) => (
-                <ToolInvocationCard key={toolCall.id} toolCall={toolCall} toolsOpen={toolsOpen} />
-              ))}
-            </div>
-          </details>
+          <div>
+            {message.toolCalls.length === 1 ? (
+              <ToolInvocationCard toolCall={message.toolCalls[0]} toolsOpen={toolsOpen} />
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={onToolsToggle}
+                  className="flex items-center gap-2 text-sm font-semibold tracking-[0.08em] text-base-content/70"
+                >
+                  <span className={`transition-transform ${toolsOpen ? 'rotate-90' : ''}`}>▶</span>
+                  Tool calls ({message.toolCalls.length})
+                </button>
+                {toolsOpen && (
+                  <div className="mt-4 space-y-3">
+                    {message.toolCalls.map((toolCall) => (
+                      <ToolInvocationCard key={toolCall.id} toolCall={toolCall} toolsOpen={toolsOpen} />
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         ) : null}
       </div>
     </article>
@@ -298,10 +324,9 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
       : 'unknown'
 
   return (
-    <details
+    <div
       className={`tool-panel ${resultStatus === 'error' ? 'tool-panel--error' : ''}`.trim()}
       key={`${toolCall.id}-${toolsOpen ? 'open' : 'closed'}`}
-      defaultOpen={toolsOpen}
     >
       <summary className="flex cursor-pointer list-none flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
@@ -309,7 +334,7 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
             <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
               {toolCall.name}
             </span>
-            <span className={statusBadgeClass(resultStatus)}>{resultStatus}</span>
+            {resultStatus === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
           </div>
           <p className="mt-3 truncate font-mono text-xs leading-6 text-base-content/60">
             <span className="font-semibold uppercase tracking-[0.16em] text-base-content/40">
@@ -353,7 +378,7 @@ function ToolInvocationCard({ toolCall, toolsOpen }: { toolCall: ToolCallView; t
           <ToolResultCard key={`${toolCall.id}-result-${index}`} result={result} />
         ))}
       </div>
-    </details>
+    </div>
   )
 }
 
@@ -365,7 +390,7 @@ function ToolResultCard({ result }: { result: ToolResultView }) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className={statusBadgeClass(result.status)}>{result.status}</span>
+            {result.status === 'error' && <span className="badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">error</span>}
             {result.summary ? <p className="text-sm text-base-content/70">{result.summary}</p> : null}
           </div>
         </div>
@@ -406,18 +431,6 @@ function MetaLine({ label, value }: { label: string; value: string }) {
       <p className="mt-2 text-sm font-medium leading-6 text-base-content/75">{value}</p>
     </div>
   )
-}
-
-function statusBadgeClass(status: string) {
-  if (status === 'error') {
-    return 'badge badge-error badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]'
-  }
-
-  if (status === 'success') {
-    return 'badge badge-success badge-soft rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]'
-  }
-
-  return 'badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-base-content/55'
 }
 
 function formatNumber(value: number | undefined) {
