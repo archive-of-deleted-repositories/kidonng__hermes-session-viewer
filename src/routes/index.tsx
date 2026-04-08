@@ -57,13 +57,10 @@ function ViewerRoute() {
 
       <div className="drawer-content">
         <main className="min-h-screen px-4 py-4 sm:px-5 lg:px-8 lg:py-7">
-          <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
-            <label htmlFor="session-drawer" className="btn btn-outline btn-sm rounded-full drawer-button px-4">
+          <div className="fixed bottom-4 left-4 z-10 flex items-center justify-left gap-3 lg:hidden">
+            <label htmlFor="session-drawer" className="btn btn-sm rounded-full drawer-button px-4">
               Sessions
             </label>
-            <span className="badge badge-outline rounded-full px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
-              {data.sessions.length} loaded
-            </span>
           </div>
 
           {data.transcript ? (

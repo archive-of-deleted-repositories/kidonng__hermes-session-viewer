@@ -155,32 +155,32 @@ export function SessionHeader({
   return (
     <>
       <section className="sticky top-4 lg:top-7 z-10 rounded-2xl border border-base-300/70 bg-base-100/90 backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 lg:px-6">
-          <div className="flex min-w-0 flex-1 items-center gap-4">
+        <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 lg:px-6">
+          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <div className="min-w-0">
-              <h2 className="truncate text-lg font-bold tracking-tight text-base-content">{summary.displayName}</h2>
-              <p className="truncate font-mono text-xs text-base-content/45">{meta.sessionId}</p>
+              <h2 className="truncate text-base font-bold tracking-tight text-base-content sm:text-lg">{summary.displayName}</h2>
+              <p className="truncate font-mono text-[10px] text-base-content/45 sm:text-xs">{meta.sessionId}</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="badge badge-primary badge-soft rounded-full px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]">
+              <span className="badge badge-primary badge-soft rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] sm:text-[10px] sm:px-2 sm:py-1.5">
                 {summary.platform ?? 'local'}
               </span>
               {summary.chatType ? (
-                <span className="badge badge-outline rounded-full px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]">
+                <span className="badge badge-outline rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] sm:text-[10px] sm:px-2 sm:py-1.5">
                   {summary.chatType}
                 </span>
               ) : null}
               {meta.model ? (
-                <span className="badge badge-outline rounded-full px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]">
+                <span className="badge badge-outline rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] sm:text-[10px] sm:px-2 sm:py-1.5">
                   {meta.model}
                 </span>
               ) : null}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-2 sm:gap-4">
+            <div className="flex items-center gap-3 text-[11px] sm:text-xs">
               <span className="text-base-content/45">
                 <span className="font-medium text-base-content/65">{formatNumber(messageCount)}</span> msgs
               </span>
@@ -197,7 +197,7 @@ export function SessionHeader({
                 <button
                   type="button"
                   onClick={() => (document.getElementById('system-prompt-modal') as HTMLDialogElement | null)?.showModal()}
-                  className="btn btn-sm btn-ghost rounded-full px-3 text-xs font-medium"
+                  className="btn btn-sm btn-ghost rounded-full px-2 text-[10px] font-medium sm:px-3 sm:text-xs"
                 >
                   System prompt
                 </button>
@@ -205,14 +205,14 @@ export function SessionHeader({
               <button
                 type="button"
                 onClick={() => onReasoningOpenChange(!reasoningOpen)}
-                className="btn btn-sm btn-ghost rounded-full px-3 text-xs font-medium"
+                className="btn btn-sm btn-ghost rounded-full px-2 text-[10px] font-medium sm:px-3 sm:text-xs"
               >
                 {reasoningOpen ? '✓' : '○'} Reasoning
               </button>
               <button
                 type="button"
                 onClick={() => onToolsOpenChange(!toolsOpen)}
-                className="btn btn-sm btn-ghost rounded-full px-3 text-xs font-medium"
+                className="btn btn-sm btn-ghost rounded-full px-2 text-[10px] font-medium sm:px-3 sm:text-xs"
               >
                 {toolsOpen ? '✓' : '○'} Tools
               </button>
