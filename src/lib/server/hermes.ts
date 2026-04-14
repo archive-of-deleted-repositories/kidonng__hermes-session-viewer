@@ -224,7 +224,8 @@ async function buildMessages(parsedLines: ParsedLine[]): Promise<TranscriptMessa
 
     if (role === 'tool') {
       const toolCallId = toStringValue(parsedLine.entry.tool_call_id)
-      const result = await toToolResultView(parsedLine.entry, parsedLine.raw)
+      const toolName = toolCallId && pending.has(toolCallId) ? pending.get(toolCallId)?.call.name : undefined
+      const result = await toToolResultView(parsedLine.entry, parsedLine.raw, toolName)
 
       if (toolCallId && pending.has(toolCallId)) {
         const pendingCall = pending.get(toolCallId)
@@ -339,16 +340,19 @@ async function toToolCallView(
   }
 }
 
-async function toToolResultView(entry: RawEntry, raw: string): Promise<ToolResultView> {
+async function toToolResultView(entry: RawEntry, raw: string, toolName?: string): Promise<ToolResultView> {
   const contentText = toContentString(entry.content) ?? ''
   const parsed = safeParseJson(contentText)
   const status = inferToolStatus(parsed)
-  const analysis = extractAnalysis(parsed)
   const summary = buildResultSummary(parsed, contentText)
 
   const rendered: Record<string, string> = {}
-  if (analysis) {
-    rendered.analysis = await renderMarkdown(analysis)
+  if (toolName === 'browser_vision' && isRecord(parsed) && 'analysis' in parsed) {
+    rendered.analysis = await renderMarkdown(parsed.analysis as string)
+  } else if (toolName === 'patch' && isRecord(parsed) && 'diff' in parsed) {
+    rendered.diff = await highlightCode(parsed.diff as string, 'diff')
+  } else if (toolName === 'skill_view' && isRecord(parsed) && 'content' in parsed) {
+    rendered.content = await renderMarkdown(parsed.content as string)
   }
 
   return {
@@ -571,14 +575,6 @@ function inferToolStatus(parsed: unknown): ToolResultStatus {
   }
 
   return 'unknown'
-}
-
-function extractAnalysis(parsed: unknown): string | undefined {
-  if (!isRecord(parsed)) {
-    return undefined
-  }
-
-  return typeof parsed.analysis === 'string' ? parsed.analysis : undefined
 }
 
 function buildResultSummary(parsed: unknown, contentText: string): string | undefined {
