@@ -270,12 +270,13 @@
   }
 
   .md {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
     font-size: 0.95rem;
     line-height: 1.75;
     color: color-mix(in oklch, var(--color-base-content) 88%, black 12%);
-    word-break: break-all;
+    overflow-wrap: break-word;
   }
 
   .md > :first-child {
@@ -313,7 +314,8 @@
 
   .md ul,
   .md ol {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
     padding-left: 1.25rem;
   }
