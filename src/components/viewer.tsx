@@ -126,7 +126,7 @@ export function SessionSidebar({ sessions, activeSessionId, filter, onFilterChan
                 </div>
 
                 <div className="mt-3 flex items-center justify-between gap-3 text-xs text-base-content/55">
-                  <span className="truncate">{session.chatType ?? session.origin?.chat_type ?? 'session'}</span>
+                  <span className="capitalize truncate">{session.chatType ?? session.origin?.chat_type ?? 'session'}</span>
                   <time
                     dateTime={session.updatedAt}
                     title={formatAbsoluteTime(session.updatedAt)}
