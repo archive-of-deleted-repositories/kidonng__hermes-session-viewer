@@ -380,8 +380,13 @@ function JsonTable({ data, columns, rendered }: { data: Record<string, unknown> 
   const entries = isArray ? data.map((v, i) => [String(i), v] as [string, unknown]) : Object.entries(data)
 
   function renderValue(value: unknown, key: string): React.ReactNode {
-    if (typeof value === 'object' && value !== null) {
-      return JSON.stringify(value)
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      const str = JSON.stringify(value, null, 2)
+      return (
+        <pre className="overflow-x-auto rounded-2xl bg-base-200 p-4 font-mono text-xs leading-6 text-base-content">
+          <code>{str}</code>
+        </pre>
+      )
     }
     const str = String(value)
     const colType = columns?.[key]
