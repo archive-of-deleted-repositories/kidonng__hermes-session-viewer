@@ -6,6 +6,30 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import type { Element } from 'hast'
 
+function extractFrontmatter(markdown: string): { frontmatter: string; content: string } | null {
+  const lines = markdown.split('\n')
+  if (lines[0]?.trim() !== '---') {
+    return null
+  }
+
+  let endIndex = -1
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i].trim() === '---') {
+      endIndex = i
+      break
+    }
+  }
+
+  if (endIndex === -1) {
+    return null
+  }
+
+  const frontmatter = lines.slice(1, endIndex).join('\n')
+  const content = lines.slice(endIndex + 1).join('\n')
+
+  return { frontmatter, content }
+}
+
 interface Transformer {
   name: string
   pre(node: Element): void
@@ -52,7 +76,12 @@ export async function renderMarkdown(markdown: string): Promise<string> {
     return ''
   }
 
-  const file = await markdownProcessor.process(markdown)
+  const frontmatterData = extractFrontmatter(markdown)
+  const contentToRender = frontmatterData
+    ? `\`\`\`yaml\n${frontmatterData.frontmatter}\n\`\`\`\n\n${frontmatterData.content}`
+    : markdown
+
+  const file = await markdownProcessor.process(contentToRender)
   const html = String(file)
 
   if (!html.includes('__copyCode')) return html
